@@ -1,55 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://b4tse314umcic"]
+[gd_scene load_steps=7 format=3 uid="uid://dtjnbo3h7hqxt"]
 
-[ext_resource type="Script" path="res://Scripts/ShaderInit.cs" id="2_ur0i4"]
-
-[sub_resource type="Shader" id="Shader_xnu30"]
-code = "shader_type canvas_item;
-uniform vec2[100] roots;
-uniform int idclose = -1;
-void fragment() {
-	vec2 res = vec2(1.0/SCREEN_PIXEL_SIZE.x, 1.0/SCREEN_PIXEL_SIZE.y);
-	vec2 scale = vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y);
-	float best = 999999999.0;
-	int id = -1;
-	float c = 0.1;
-	float count = 0.0;
-	bool circle = false;
-	for (int i = 0; i < 100; i++){
-		float d = distance(roots[i], scale);
-		
-		if (d < length(res)){
-			count++;
-			if (d < 10.0){
-				if (i == idclose){
-					c = 1.0;
-				}
-				circle = true;
-				break;
-			}
-			if (d < best){
-				best = d;
-				id = i;
-				
-			}
-		}
-	}
-	if (circle){
-		COLOR = vec4(0.0,1.0,0.0,c);
-	}
-	else{
-		if (id == -1){
-			COLOR = vec4(1.0,1.0,1.0,1.0);
-		}
-		else{
-			COLOR = vec4(float(id)/count,0.0,0.0,1.0);
-		}
-	}
-	
-}
-"
+[ext_resource type="Shader" path="res://Shaders/Newton.gdshader" id="1_rsywl"]
+[ext_resource type="Script" path="res://Scripts/Tiling.cs" id="2_a76di"]
+[ext_resource type="Shader" path="res://Shaders/Circles.gdshader" id="3_fvg7k"]
+[ext_resource type="Script" path="res://Scripts/Circles.cs" id="4_v2nkx"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hwlsm"]
-shader = SubResource("Shader_xnu30")
+shader = ExtResource("1_rsywl")
+shader_parameter/roots = null
+shader_parameter/valid = 0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a3sxi"]
+shader = ExtResource("3_fvg7k")
 shader_parameter/roots = null
 shader_parameter/idclose = -1
 
@@ -60,7 +22,11 @@ shader_parameter/idclose = -1
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
 material = SubResource("ShaderMaterial_hwlsm")
-script = ExtResource("2_ur0i4")
-resolutionScale = 1.0
+script = ExtResource("2_a76di")
+
+[node name="Sprite2D2" type="Sprite2D" parent="." node_paths=PackedStringArray("tiling")]
+material = SubResource("ShaderMaterial_a3sxi")
+script = ExtResource("4_v2nkx")
+tiling = NodePath("../Sprite2D")
 
 [node name="Camera2D" type="Camera2D" parent="."]

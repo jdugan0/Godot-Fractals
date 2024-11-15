@@ -54,18 +54,12 @@ public partial class Tiling : Sprite2D
     {
         int id = findClosest();
         Vector2[] list = new Vector2[100];
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < roots.Count && i < 100; i++)
         {
-            if (i + 1 > roots.Count)
-            {
-                list[i] = new Vector2(-999999999, -999999999);
-            }
-            else
-            {
-                list[i] = roots[i];
-            }
+            list[i] = roots[i];
         }
         m.SetShaderParameter("roots", list);
+        m.SetShaderParameter("valid", Math.Min(roots.Count, 100));
     }
     public int findClosest()
     {
