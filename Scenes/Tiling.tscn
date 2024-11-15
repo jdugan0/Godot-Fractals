@@ -13,6 +13,7 @@ shader_parameter/valid = 0
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_a3sxi"]
 shader = ExtResource("1_20jis")
 shader_parameter/roots = null
+shader_parameter/valid = 0
 shader_parameter/idclose = -1
 
 [node name="Node2D" type="Node2D"]
