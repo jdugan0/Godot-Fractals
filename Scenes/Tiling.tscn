@@ -1,11 +1,18 @@
-[gd_scene load_steps=4 format=3 uid="uid://d4e7w2bgpfxhr"]
+[gd_scene load_steps=7 format=3 uid="uid://d4e7w2bgpfxhr"]
 
+[ext_resource type="Shader" path="res://Shaders/Circles.gdshader" id="1_20jis"]
 [ext_resource type="Shader" path="res://Shaders/Tiling.gdshader" id="1_qykxu"]
-[ext_resource type="Script" path="res://Scripts/ShaderInit.cs" id="2_xbo40"]
+[ext_resource type="Script" path="res://Scripts/Circles.cs" id="2_km48b"]
+[ext_resource type="Script" path="res://Scripts/Tiling.cs" id="2_rb2up"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hwlsm"]
 shader = ExtResource("1_qykxu")
 shader_parameter/roots = null
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a3sxi"]
+shader = ExtResource("1_20jis")
+shader_parameter/roots = null
+shader_parameter/idclose = -1
 
 [node name="Node2D" type="Node2D"]
 
@@ -14,7 +21,11 @@ shader_parameter/roots = null
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
 material = SubResource("ShaderMaterial_hwlsm")
-script = ExtResource("2_xbo40")
-resolutionScale = 1.0
+script = ExtResource("2_rb2up")
+
+[node name="Sprite2D2" type="Sprite2D" parent="." node_paths=PackedStringArray("tiling")]
+material = SubResource("ShaderMaterial_a3sxi")
+script = ExtResource("2_km48b")
+tiling = NodePath("../Sprite2D")
 
 [node name="Camera2D" type="Camera2D" parent="."]

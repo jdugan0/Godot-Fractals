@@ -1,11 +1,57 @@
-[gd_scene load_steps=4 format=3 uid="uid://b6yfvtpgfh81l"]
+[gd_scene load_steps=4 format=3 uid="uid://b4tse314umcic"]
 
-[ext_resource type="Shader" path="res://Shaders/NewtonMethod.gdshader" id="1_fls30"]
 [ext_resource type="Script" path="res://Scripts/ShaderInit.cs" id="2_ur0i4"]
 
+[sub_resource type="Shader" id="Shader_xnu30"]
+code = "shader_type canvas_item;
+uniform vec2[100] roots;
+uniform int idclose = -1;
+void fragment() {
+	vec2 res = vec2(1.0/SCREEN_PIXEL_SIZE.x, 1.0/SCREEN_PIXEL_SIZE.y);
+	vec2 scale = vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y);
+	float best = 999999999.0;
+	int id = -1;
+	float c = 0.1;
+	float count = 0.0;
+	bool circle = false;
+	for (int i = 0; i < 100; i++){
+		float d = distance(roots[i], scale);
+		
+		if (d < length(res)){
+			count++;
+			if (d < 10.0){
+				if (i == idclose){
+					c = 1.0;
+				}
+				circle = true;
+				break;
+			}
+			if (d < best){
+				best = d;
+				id = i;
+				
+			}
+		}
+	}
+	if (circle){
+		COLOR = vec4(0.0,1.0,0.0,c);
+	}
+	else{
+		if (id == -1){
+			COLOR = vec4(1.0,1.0,1.0,1.0);
+		}
+		else{
+			COLOR = vec4(float(id)/count,0.0,0.0,1.0);
+		}
+	}
+	
+}
+"
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hwlsm"]
-shader = ExtResource("1_fls30")
+shader = SubResource("Shader_xnu30")
 shader_parameter/roots = null
+shader_parameter/idclose = -1
 
 [node name="Node2D" type="Node2D"]
 
