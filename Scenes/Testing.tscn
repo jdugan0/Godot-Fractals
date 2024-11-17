@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://dpgeagm166ocp"]
+
+[ext_resource type="Shader" path="res://Shaders/Testing.gdshader" id="1_l6wrl"]
+[ext_resource type="Texture2D" uid="uid://d0kqy4s2rvqsa" path="res://icon.svg" id="2_q1dra"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7d4r5"]
+shader = ExtResource("1_l6wrl")
+
+[node name="Testing" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_7d4r5")
+texture = ExtResource("2_q1dra")
+
+[node name="Camera2D" type="Camera2D" parent="."]

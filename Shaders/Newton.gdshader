@@ -1,32 +1,52 @@
 shader_type canvas_item;
-uniform vec2[100] roots;
+uniform vec2[100] roots; //roots given in pixel coords on screen
+uniform vec2 offset;
+uniform float zoomFactor;
 uniform int valid = 0;
+uniform vec2 res = vec2(1920, 1080);
+vec2 complexMult(vec2 one, vec2 two){
+	return vec2(one.x * two.x - one.y * two.y, one.x * two.y + one.y * two.x);
+}
+vec2 complexDivide(vec2 a, vec2 b) {
+    float denom = b.x * b.x + b.y * b.y + 1e-8;
+    return vec2(
+        (a.x * b.x + a.y * b.y) / denom,
+        (a.y * b.x - a.x * b.y) / denom
+    );
+}
+vec2 transform(vec2 a){
+	vec2 scale = a / max(res.x, res.y);
+	return (scale - vec2(scale.x/2.0, scale.y/2.0)) / zoomFactor;
+}
 void fragment() {
-	vec2 res = vec2(1.0/SCREEN_PIXEL_SIZE.x, 1.0/SCREEN_PIXEL_SIZE.y);
-	vec2 scale = vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y);
-	float zoom = length(res)/2.0;
-	mat2 c = mat2(vec2(scale.x, scale.y),vec2(-scale.y, scale.x)) / zoom;
-	float epsilon = 0.00001;
+	vec2 scale = transform(vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y)) + offset;
 	
-	for (int j = 0; j < 10; j++){
-		mat2 result = mat2(1);
-		mat2 h = mat2(1);
+	//float epsilon = 0.0001;
+	float diff = 0.0;
+	for (int j = 0; j < 200; j++){
+		vec2 result = vec2(1,0);
+		//vec2 h = vec2(1,0);
+		vec2 prime = vec2(0);
 		for (int i = 0; i < valid; i++){
-			mat2 root = mat2(roots[i],vec2(-roots[i].y,roots[i].x)) / zoom;
-			result *= (c - root);
-			h *= ((c - mat2(epsilon)) - root);
+			vec2 root = transform(roots[i]);
+			result = complexMult(result, (scale - root));
+			//h = complexMult(((scale - vec2(epsilon,0)) - root), h);
+			prime += complexDivide(vec2(1,0), (scale - root));
 		}
-		mat2 prime = (result - h) * mat2(1.0/epsilon);
-		c = -1.0 * (result * inverse(prime)) + c;
+		//vec2 prime1 = complexDivide((result - h),vec2(epsilon,0));
+		prime = complexMult(result,prime);
+		//diff = length(-prime + prime1); //debug variable
+		scale = scale - complexDivide(result, prime);
+		 // using analytical derivative NOT numerical
 	}
-	vec2 zero = vec2(c[0]);
+	vec2 zero = scale;
 	
 		
 	//COLOR = vec4(zero, 0.0, 1.0);
 	float best = 1.0 / 0.0;
 	int id = -1;
 	for (int i = 0; i < valid; i++){
-		float d = distance(roots[i] / zoom, zero);		
+		float d = distance(transform(roots[i]), zero);		
 		if (d < best){
 			best = d;
 			id = i;

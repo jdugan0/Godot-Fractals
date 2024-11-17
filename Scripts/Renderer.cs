@@ -42,7 +42,7 @@ public partial class Renderer : Sprite2D
 		foreach(Pixel p in pixels){
 			p.color = Colors.Gray;
 			Complex c = convert(new Complex(p.pos.X, p.pos.Y));
-			if (calculateMandlebrot(c, 15)){
+			if (calculateMandlebrot(c, 100)){
 				p.color = Colors.Black;
 			}
 			image.SetPixel(p.pos.X, p.pos.Y, p.color);

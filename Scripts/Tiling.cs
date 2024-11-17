@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Security.Principal;
 
 public partial class Tiling : Sprite2D
 {
@@ -10,6 +9,9 @@ public partial class Tiling : Sprite2D
     ImageTexture texture = new ImageTexture();
     public ShaderMaterial material;
     List<Vector2> roots = new List<Vector2>();
+    Vector2 offset = new Vector2();
+    float zoom = 0.1f;
+    [Export] float speed = 100f;
     public override void _Ready()
     {
         material = (ShaderMaterial)Material;
@@ -47,6 +49,21 @@ public partial class Tiling : Sprite2D
             }
             
         }
+        Vector2 velocity = new Vector2();
+        if (Input.IsActionPressed("UP")){
+            velocity += Vector2.Up;
+        }
+        if (Input.IsActionPressed("DOWN")){
+            velocity += Vector2.Down;
+        }
+        if (Input.IsActionPressed("LEFT")){
+            velocity += Vector2.Left;
+        }
+        if (Input.IsActionPressed("RIGHT")){
+            velocity += Vector2.Right;
+        }
+        velocity = velocity.Normalized() * (float)delta / zoom * speed;
+        offset += velocity;
         SendData(material);
 
     }
@@ -60,6 +77,8 @@ public partial class Tiling : Sprite2D
         }
         m.SetShaderParameter("roots", list);
         m.SetShaderParameter("valid", Math.Min(roots.Count, 100));
+        m.SetShaderParameter("offset", offset);
+        m.SetShaderParameter("zoomFactor", zoom);
     }
     public int findClosest()
     {

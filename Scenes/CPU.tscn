@@ -5,5 +5,9 @@
 [node name="Node2D" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
 script = ExtResource("1_i2uov")
 resolutionScale = 1.0
+zoom = 500.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
