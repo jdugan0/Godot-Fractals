@@ -30,7 +30,7 @@ shader_parameter/res = Vector2(1920, 1080)
 texture_filter = 1
 material = SubResource("ShaderMaterial_hwlsm")
 script = ExtResource("2_a76di")
-speed = 0.25
+speed = 1.0
 
 [node name="Sprite2D2" type="Sprite2D" parent="." node_paths=PackedStringArray("tiling")]
 material = SubResource("ShaderMaterial_a3sxi")
