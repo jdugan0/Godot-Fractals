@@ -12,6 +12,7 @@ shader_parameter/offset = null
 shader_parameter/zoomFactor = null
 shader_parameter/valid = 0
 shader_parameter/res = Vector2(1920, 1080)
+shader_parameter/colorScheme = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_a3sxi"]
 shader = ExtResource("3_fvg7k")

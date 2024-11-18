@@ -4,6 +4,7 @@ uniform vec2 offset;
 uniform float zoomFactor;
 uniform int valid = 0;
 uniform vec2 res = vec2(1920, 1080);
+uniform bool colorScheme;
 vec2 complexMult(vec2 one, vec2 two){
 	return vec2(one.x * two.x - one.y * two.y, one.x * two.y + one.y * two.x);
 }
@@ -17,6 +18,28 @@ vec2 complexDivide(vec2 a, vec2 b) {
 vec2 transform(vec2 a){
 	vec2 scale = (a + vec2(-1920.0/2.0, -1080.0/2.0)) / max(res.x, res.y)/ zoomFactor+ offset;
 	return scale;
+}
+vec3 hsvToRGB(float angle){
+	float H = angle/60.0;
+	
+	if (H <= 1.0){
+		return vec3(1.0,H,0.0);
+	}
+	else if (H <= 2.0){
+		return vec3(-H + 2.0, 1.0, 0.0);
+	}
+	else if (H <= 3.0){
+		return vec3(0.0,1.0,H - 2.0);
+	}
+	else if (H <= 4.0){
+		return vec3(0.0, -H + 4.0, 1.0);
+	}
+	else if (H<=5.0){
+		return vec3(H - 4.0, 0.0, -H + 5.0);
+	}
+	else if (H<=6.0){
+		return vec3(1.0, H - 5.0, 0.0);
+	}
 }
 void fragment() {
 	bool early = false;
@@ -42,7 +65,7 @@ void fragment() {
 		//diff = length(-prime + prime1); //debug variable
 		scale = scale - complexDivide(result, prime);
 		//iterations++;
-		if (length(prime) < 1e-3){
+		if (length(prime) < 1e-3 / pow(float(valid),float(valid))){
 			//early = true;
 			break;
 		} 
@@ -65,7 +88,13 @@ void fragment() {
 		COLOR = vec4(1.0,1.0,1.0,1.0);
 	}
 	else{
-		COLOR = vec4(float(id)/float(valid),0.0,float(iterations)/1000.0,1.0);
+		if (colorScheme){
+			COLOR = vec4(hsvToRGB(float(id) * (360.0 / float(valid))),1.0);
+		}
+		else{
+			COLOR = vec4(float(id) / float(valid), 0.0, 0.0, 1.0);
+		}
+		
 	}
 	
 	

@@ -12,6 +12,7 @@ public partial class Tiling : Sprite2D
     Vector2 offset = new Vector2(0, 0);
     float zoom = 0.1f;
     [Export] float speed = 100f;
+    bool colorScheme = false;
     public override void _Ready()
     {
         material = (ShaderMaterial)Material;
@@ -74,6 +75,9 @@ public partial class Tiling : Sprite2D
             offset = new Vector2(0,0);
             zoom = 0.100f;
         }
+        if (Input.IsActionJustPressed("Color")){
+            colorScheme = !colorScheme;
+        }
         zoom = Mathf.Clamp(zoom, (float)1e-32, 999999);
         velocity = velocity.Normalized() * (float)delta / zoom * speed;
         offset += velocity;
@@ -93,6 +97,7 @@ public partial class Tiling : Sprite2D
         m.SetShaderParameter("valid", Math.Min(roots.Count, 100));
         m.SetShaderParameter("offset", offset);
         m.SetShaderParameter("zoomFactor", zoom);
+        m.SetShaderParameter("colorScheme", colorScheme);
     }
     public int findClosest()
     {
