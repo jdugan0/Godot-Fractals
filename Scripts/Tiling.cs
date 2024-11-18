@@ -13,6 +13,8 @@ public partial class Tiling : Sprite2D
     float zoom = 0.1f;
     [Export] float speed = 100f;
     bool colorScheme = false;
+    bool jakeMode = false;
+    bool gradient = false;
     public override void _Ready()
     {
         material = (ShaderMaterial)Material;
@@ -78,10 +80,17 @@ public partial class Tiling : Sprite2D
         if (Input.IsActionJustPressed("Color")){
             colorScheme = !colorScheme;
         }
+        if (Input.IsActionJustPressed("Jake")){
+            jakeMode = !jakeMode;
+        }
+        if (Input.IsActionJustPressed("Gradient")){
+            gradient = !gradient;
+        }
+        // colorScheme = !colorScheme;
         zoom = Mathf.Clamp(zoom, (float)1e-32, 999999);
         velocity = velocity.Normalized() * (float)delta / zoom * speed;
         offset += velocity;
-        GD.Print(zoom);
+        // GD.Print(zoom);
         SendData(material);
 
     }
@@ -98,6 +107,8 @@ public partial class Tiling : Sprite2D
         m.SetShaderParameter("offset", offset);
         m.SetShaderParameter("zoomFactor", zoom);
         m.SetShaderParameter("colorScheme", colorScheme);
+        m.SetShaderParameter("jakeMode", jakeMode);
+        m.SetShaderParameter("gradient", gradient);
     }
     public int findClosest()
     {

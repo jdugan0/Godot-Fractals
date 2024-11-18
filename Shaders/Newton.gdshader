@@ -5,6 +5,8 @@ uniform float zoomFactor;
 uniform int valid = 0;
 uniform vec2 res = vec2(1920, 1080);
 uniform bool colorScheme;
+uniform bool jakeMode;
+uniform bool gradient;
 vec2 complexMult(vec2 one, vec2 two){
 	return vec2(one.x * two.x - one.y * two.y, one.x * two.y + one.y * two.x);
 }
@@ -93,6 +95,14 @@ void fragment() {
 		}
 		else{
 			COLOR = vec4(float(id) / float(valid), 0.0, 0.0, 1.0);
+			if (jakeMode){
+				COLOR = vec4(0.0, 0.0, float(id) / float(valid), 1.0);
+			}
+			if (gradient){
+				COLOR = vec4(1.0-float(id) / float(valid), 0.0, float(id) / float(valid), 1.0);
+			}
+			
+			
 		}
 		
 	}
