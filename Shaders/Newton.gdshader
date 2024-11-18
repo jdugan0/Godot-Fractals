@@ -15,20 +15,20 @@ vec2 complexDivide(vec2 a, vec2 b) {
     );
 }
 vec2 transform(vec2 a){
-	vec2 scale = a / max(res.x, res.y);
-	return (scale - vec2(scale.x/2.0, scale.y/2.0)) / zoomFactor;
+	vec2 scale = (a + vec2(-1920.0/2.0, -1080.0/2.0)) / max(res.x, res.y)/ zoomFactor+ offset;
+	return scale;
 }
 void fragment() {
-	vec2 scale = transform(vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y)) + offset;
+	vec2 scale = transform(vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y));
 	
 	//float epsilon = 0.0001;
 	float diff = 0.0;
-	for (int j = 0; j < 200; j++){
+	for (int j = 0; j < 300; j++){
 		vec2 result = vec2(1,0);
 		//vec2 h = vec2(1,0);
 		vec2 prime = vec2(0);
 		for (int i = 0; i < valid; i++){
-			vec2 root = transform(roots[i]);
+			vec2 root = roots[i];
 			result = complexMult(result, (scale - root));
 			//h = complexMult(((scale - vec2(epsilon,0)) - root), h);
 			prime += complexDivide(vec2(1,0), (scale - root));
@@ -46,7 +46,7 @@ void fragment() {
 	float best = 1.0 / 0.0;
 	int id = -1;
 	for (int i = 0; i < valid; i++){
-		float d = distance(transform(roots[i]), zero);		
+		float d = distance(roots[i], zero);
 		if (d < best){
 			best = d;
 			id = i;

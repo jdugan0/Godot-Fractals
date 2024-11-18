@@ -9,7 +9,7 @@ public partial class Tiling : Sprite2D
     ImageTexture texture = new ImageTexture();
     public ShaderMaterial material;
     List<Vector2> roots = new List<Vector2>();
-    Vector2 offset = new Vector2();
+    Vector2 offset = new Vector2(0, 0);
     float zoom = 0.1f;
     [Export] float speed = 100f;
     public override void _Ready()
@@ -25,10 +25,12 @@ public partial class Tiling : Sprite2D
     public override void _Process(double delta)
     {
         // inputs
-        Vector2 mouse = GetViewport().GetMousePosition();
+        Vector2 mouse = GetViewport().GetMousePosition() + new Vector2(-1920/2, -1080/2);
+        Vector2 scale = (mouse / 1920 / zoom) + offset;
+
         if (Input.IsActionJustPressed("Click"))
         {
-            roots.Add(mouse);
+            roots.Add(scale);
         }
         if (Input.IsActionJustPressed("MMB"))
         {
@@ -44,7 +46,7 @@ public partial class Tiling : Sprite2D
             int id = findClosest();
             if (id != -1)
             {
-                roots[id] = mouse;
+                roots[id] = scale;
 
             }
             
@@ -62,8 +64,20 @@ public partial class Tiling : Sprite2D
         if (Input.IsActionPressed("RIGHT")){
             velocity += Vector2.Right;
         }
+        if (Input.IsActionPressed("ZoomIn")){
+            zoom += (float)delta * 1f * zoom;
+        }
+        if (Input.IsActionPressed("ZoomOut")){
+            zoom -= (float)delta * 1f * zoom;
+        }
+        if (Input.IsActionJustPressed("Home")){
+            offset = new Vector2(0,0);
+            zoom = 100f;
+        }
+        zoom = Mathf.Clamp(zoom, 0.001f, 999999);
         velocity = velocity.Normalized() * (float)delta / zoom * speed;
         offset += velocity;
+        GD.Print(zoom);
         SendData(material);
 
     }
@@ -82,14 +96,15 @@ public partial class Tiling : Sprite2D
     }
     public int findClosest()
     {
-        Vector2 mouse = GetViewport().GetMousePosition();
+        Vector2 mouse = GetViewport().GetMousePosition() + new Vector2(-1920/2, -1080/2);
+        Vector2 scale = (mouse / 1920 / zoom) + offset;
         float best = float.MaxValue;
         int id = -1;
         for (int i = 0; i < roots.Count; i++)
         {
-            if (roots[i].DistanceTo(mouse) < best)
+            if (roots[i].DistanceTo(scale) < best)
             {
-                best = roots[i].DistanceTo(mouse);
+                best = roots[i].DistanceTo(scale);
                 id = i;
             }
         }
