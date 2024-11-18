@@ -19,14 +19,18 @@ vec2 transform(vec2 a){
 	return scale;
 }
 void fragment() {
+	bool early = false;
 	vec2 scale = transform(vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y));
 	
 	//float epsilon = 0.0001;
 	float diff = 0.0;
-	for (int j = 0; j < 300; j++){
+	int iterations = 0;
+	for (int j = 0; j < 600; j++){
 		vec2 result = vec2(1,0);
 		//vec2 h = vec2(1,0);
+		
 		vec2 prime = vec2(0);
+		
 		for (int i = 0; i < valid; i++){
 			vec2 root = roots[i];
 			result = complexMult(result, (scale - root));
@@ -37,6 +41,11 @@ void fragment() {
 		prime = complexMult(result,prime);
 		//diff = length(-prime + prime1); //debug variable
 		scale = scale - complexDivide(result, prime);
+		//iterations++;
+		if (length(prime) < 1e-3){
+			//early = true;
+			break;
+		} 
 		 // using analytical derivative NOT numerical
 	}
 	vec2 zero = scale;
@@ -52,11 +61,12 @@ void fragment() {
 			id = i;
 		}
 	}
-	if (id == -1){
+	if (id == -1 || early){
 		COLOR = vec4(1.0,1.0,1.0,1.0);
 	}
 	else{
-		COLOR = vec4(float(id)/float(valid),0.0,0.0,1.0);
+		COLOR = vec4(float(id)/float(valid),0.0,float(iterations)/1000.0,1.0);
 	}
+	
 	
 }

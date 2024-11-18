@@ -72,9 +72,9 @@ public partial class Tiling : Sprite2D
         }
         if (Input.IsActionJustPressed("Home")){
             offset = new Vector2(0,0);
-            zoom = 100f;
+            zoom = 0.100f;
         }
-        zoom = Mathf.Clamp(zoom, 0.001f, 999999);
+        zoom = Mathf.Clamp(zoom, (float)1e-32, 999999);
         velocity = velocity.Normalized() * (float)delta / zoom * speed;
         offset += velocity;
         GD.Print(zoom);
