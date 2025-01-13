@@ -5,6 +5,9 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lpner"]
 shader = ExtResource("1_vju8y")
+shader_parameter/offset = null
+shader_parameter/zoomFactor = null
+shader_parameter/res = Vector2(1920, 1080)
 
 [node name="Node2D" type="Node2D"]
 
@@ -14,5 +17,6 @@ shader = ExtResource("1_vju8y")
 texture_filter = 1
 material = SubResource("ShaderMaterial_lpner")
 script = ExtResource("2_h45ve")
+speed = 1.0
 
 [node name="Camera2D" type="Camera2D" parent="."]

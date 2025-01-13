@@ -26,8 +26,9 @@ public partial class Tiling : Sprite2D
         SendData(material);
     }
     public override void _Process(double delta)
-    {
+    { 
         // inputs
+        material = (ShaderMaterial)Material;
         Vector2 mouse = GetViewport().GetMousePosition() + new Vector2(-1920/2, -1080/2);
         Vector2 scale = (mouse / 1920 / zoom) + offset;
 

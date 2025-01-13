@@ -1,29 +1,37 @@
 shader_type canvas_item;
-
-void vertex() {
-	
+uniform vec2 offset;
+uniform float zoomFactor;
+uniform vec2 res = vec2(1920, 1080);
+vec2 complexMult(vec2 one, vec2 two){
+	return vec2(one.x * two.x - one.y * two.y, one.x * two.y + one.y * two.x);
 }
-
+vec2 complexDivide(vec2 a, vec2 b) {
+    float denom = b.x * b.x + b.y * b.y + 1e-8;
+    return vec2(
+        (a.x * b.x + a.y * b.y) / denom,
+        (a.y * b.x - a.x * b.y) / denom
+    );
+}
+vec2 transform(vec2 a){
+	vec2 scale = (a + vec2(-1920.0/2.0, -1080.0/2.0)) / max(res.x, res.y)/ zoomFactor+ offset;
+	return scale;
+}
 void fragment() {
-	float r1 = SCREEN_PIXEL_SIZE.x / SCREEN_PIXEL_SIZE.y;
-	vec2 scale = vec2((UV.x - 0.5f), (-UV.y + 0.5) * (r1))* 4.0f;
-	mat2 c = mat2(vec2(scale.x, scale.y),vec2(-scale.y, scale.x));
-	mat2 r = c;
-	bool good = true;
-	int count = 0;
-	for (int i = 1; i < 1000; i++){
-		r = r * r + c;
-		if (sqrt(r[0][0] * r[0][0] + r[0][1] * r[0][1]) > 3.0f){
-			good = false;
+	vec2 scale = transform(vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y));
+	vec2 new = scale;
+	bool color = false;
+	for (int i = 0; i < 1000; i++){
+		new = complexMult(new, new) + scale; 
+		if (length(new) > 3.0){
+			color = true;
 			break;
 		}
-		count++;
 	}
-	if (good){
-		COLOR = vec4(1,1,1,1);
+	if (color){
+		COLOR = vec4(0,0,0,1);
 	}
 	else{
-		COLOR = vec4(float(count)/10.0,0.0,0.0,1.0);
+		COLOR = vec4(1,1,1,1);
 	}
 	
 }

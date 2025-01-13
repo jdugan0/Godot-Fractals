@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3 uid="uid://dk25idriyv67n"]
+
+[ext_resource type="Shader" path="res://Shaders/ComplexRenderer.gdshader" id="1_25xbr"]
+[ext_resource type="Script" path="res://Scripts/RecompileComplexRenderer.cs" id="1_a57cs"]
+[ext_resource type="Script" path="res://Scripts/Tiling.cs" id="2_gfjmo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k5a8s"]
+shader = ExtResource("1_25xbr")
+shader_parameter/offset = null
+shader_parameter/zoomFactor = null
+shader_parameter/res = Vector2(1920, 1080)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hwlsm"]
+shader = ExtResource("1_25xbr")
+shader_parameter/offset = null
+shader_parameter/zoomFactor = null
+shader_parameter/res = Vector2(1920, 1080)
+
+[node name="Node2D" type="Node2D"]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="TextEdit" type="TextEdit" parent="UI" node_paths=PackedStringArray("sprite")]
+offset_right = 927.0
+offset_bottom = 137.0
+theme_override_font_sizes/font_size = 66
+text = "((1/z)^18 - 1/z) / (1/z - 1)"
+script = ExtResource("1_a57cs")
+sprite = NodePath("../../Sprite2D")
+shader = SubResource("ShaderMaterial_k5a8s")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+material = SubResource("ShaderMaterial_hwlsm")
+script = ExtResource("2_gfjmo")
+speed = 1.0
+
+[node name="Camera2D" type="Camera2D" parent="."]

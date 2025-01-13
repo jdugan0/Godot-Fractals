@@ -67,7 +67,7 @@ void fragment() {
 		//diff = length(-prime + prime1); //debug variable
 		scale = scale - complexDivide(result, prime);
 		//iterations++;
-		if (length(prime) < 1e-3 / pow(float(valid),float(valid))){
+		if (length(result) < 1e-3){
 			//early = true;
 			break;
 		} 
