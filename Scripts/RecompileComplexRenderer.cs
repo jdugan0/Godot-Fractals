@@ -25,7 +25,7 @@ public partial class RecompileComplexRenderer : TextEdit
 			String glsl = ExpressionToGLSL.ExpressionParser.ConvertExpressionToGlsl(Text);
 			String code = oldCode;
 			code = code.Replace("vec2(0.00)", glsl);
-			// GD.Print(glsl);
+			GD.Print(glsl);
 			var shaderNew = new Godot.Shader();
 			shaderNew.Code = code;
 			var mat = new ShaderMaterial();
