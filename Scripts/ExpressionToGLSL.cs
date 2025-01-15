@@ -91,6 +91,39 @@ namespace ExpressionToGLSL
                 }
                 else if (c == '-')
                 {
+                    
+                    if (pos < input.Length - 1)
+                    {
+                        if (char.IsDigit(input[pos + 1]) || input[pos + 1] == '.')
+                        {
+                            // parse a number
+                            int startPos = pos;
+                            bool hasDot = (c == '.');
+                            pos++;
+                            while (pos < input.Length)
+                            {
+                                char nc = input[pos];
+                                if (char.IsDigit(nc))
+                                {
+                                    pos++;
+                                }
+                                else if (nc == '.' && !hasDot)
+                                {
+                                    // only allow one dot
+                                    hasDot = true;
+                                    pos++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+
+                            string numberText = input.Substring(startPos, pos - startPos);
+                            tokens.Add(new Token(TokenType.Number, numberText));
+                            continue;
+                        }
+                    }
                     tokens.Add(new Token(TokenType.Minus, c.ToString()));
                     pos++;
                 }
@@ -330,7 +363,7 @@ namespace ExpressionToGLSL
             {
                 // Convert string to double
                 // CultureInfo.InvariantCulture ensures '.' is decimal separator
-                Value = double.Parse(text, CultureInfo.InvariantCulture); 
+                Value = double.Parse(text, CultureInfo.InvariantCulture);
             }
 
             public override string ToGlsl()

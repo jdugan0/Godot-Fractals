@@ -96,7 +96,7 @@ float func(vec2 z) {
 
 void fragment() {
 	bool early = false;
-	vec2 scale = transform(vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y));
+	vec2 scale = transform(vec2((UV.x) / SCREEN_PIXEL_SIZE.x, (UV.y) /SCREEN_PIXEL_SIZE.y)) - vec2(16.0/9.0,1);
 	
 	COLOR = vec4(hsv_to_rgb(func(scale) * (180.0 / PI),1.0,1.0),1.0);
 }

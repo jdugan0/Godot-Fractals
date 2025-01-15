@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 public partial class Tiling : Sprite2D
 {
@@ -15,6 +16,7 @@ public partial class Tiling : Sprite2D
     bool colorScheme = false;
     bool jakeMode = false;
     bool gradient = false;
+    [Export] TextEdit textEdit;
     public override void _Ready()
     {
         material = (ShaderMaterial)Material;
@@ -26,10 +28,10 @@ public partial class Tiling : Sprite2D
         SendData(material);
     }
     public override void _Process(double delta)
-    { 
+    {
         // inputs
         material = (ShaderMaterial)Material;
-        Vector2 mouse = GetViewport().GetMousePosition() + new Vector2(-1920/2, -1080/2);
+        Vector2 mouse = GetViewport().GetMousePosition() + new Vector2(-1920 / 2, -1080 / 2);
         Vector2 scale = (mouse / 1920 / zoom) + offset;
 
         if (Input.IsActionJustPressed("Click"))
@@ -53,38 +55,59 @@ public partial class Tiling : Sprite2D
                 roots[id] = scale;
 
             }
-            
+
         }
         Vector2 velocity = new Vector2();
-        if (Input.IsActionPressed("UP")){
-            velocity += Vector2.Up;
+        bool doStuff = true;
+        if (textEdit != null)
+        {
+            if (textEdit.HasFocus())
+            {
+                doStuff = false;
+            }
         }
-        if (Input.IsActionPressed("DOWN")){
-            velocity += Vector2.Down;
+        if (doStuff)
+        {
+            if (Input.IsActionPressed("UP"))
+            {
+                velocity += Vector2.Up;
+            }
+            if (Input.IsActionPressed("DOWN"))
+            {
+                velocity += Vector2.Down;
+            }
+            if (Input.IsActionPressed("LEFT"))
+            {
+                velocity += Vector2.Left;
+            }
+            if (Input.IsActionPressed("RIGHT"))
+            {
+                velocity += Vector2.Right;
+            }
+            if (Input.IsActionPressed("ZoomIn"))
+            {
+                zoom += (float)delta * 1f * zoom;
+            }
+            if (Input.IsActionPressed("ZoomOut"))
+            {
+                zoom -= (float)delta * 1f * zoom;
+            }
+            if (Input.IsActionJustPressed("Home"))
+            {
+                offset = new Vector2(0, 0);
+                zoom = 0.100f;
+            }
         }
-        if (Input.IsActionPressed("LEFT")){
-            velocity += Vector2.Left;
-        }
-        if (Input.IsActionPressed("RIGHT")){
-            velocity += Vector2.Right;
-        }
-        if (Input.IsActionPressed("ZoomIn")){
-            zoom += (float)delta * 1f * zoom;
-        }
-        if (Input.IsActionPressed("ZoomOut")){
-            zoom -= (float)delta * 1f * zoom;
-        }
-        if (Input.IsActionJustPressed("Home")){
-            offset = new Vector2(0,0);
-            zoom = 0.100f;
-        }
-        if (Input.IsActionJustPressed("Color")){
+        if (Input.IsActionJustPressed("Color"))
+        {
             colorScheme = !colorScheme;
         }
-        if (Input.IsActionJustPressed("Jake")){
+        if (Input.IsActionJustPressed("Jake"))
+        {
             jakeMode = !jakeMode;
         }
-        if (Input.IsActionJustPressed("Gradient")){
+        if (Input.IsActionJustPressed("Gradient"))
+        {
             gradient = !gradient;
         }
         // colorScheme = !colorScheme;
@@ -113,7 +136,7 @@ public partial class Tiling : Sprite2D
     }
     public int findClosest()
     {
-        Vector2 mouse = GetViewport().GetMousePosition() + new Vector2(-1920/2, -1080/2);
+        Vector2 mouse = GetViewport().GetMousePosition() + new Vector2(-1920 / 2, -1080 / 2);
         Vector2 scale = (mouse / 1920 / zoom) + offset;
         float best = float.MaxValue;
         int id = -1;

@@ -20,6 +20,14 @@ shader_parameter/res = Vector2(1920, 1080)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
+[node name="Control" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="TextEdit" type="TextEdit" parent="UI" node_paths=PackedStringArray("sprite")]
 offset_right = 927.0
 offset_bottom = 137.0
@@ -29,10 +37,11 @@ script = ExtResource("1_a57cs")
 sprite = NodePath("../../Sprite2D")
 shader = SubResource("ShaderMaterial_k5a8s")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." node_paths=PackedStringArray("textEdit")]
 texture_filter = 1
 material = SubResource("ShaderMaterial_hwlsm")
 script = ExtResource("2_gfjmo")
 speed = 1.0
+textEdit = NodePath("../UI/TextEdit")
 
 [node name="Camera2D" type="Camera2D" parent="."]
