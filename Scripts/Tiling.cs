@@ -18,6 +18,7 @@ public partial class Tiling : Sprite2D
     bool gradient = false;
     [Export] TextEdit textEdit;
     bool funRendering = false;
+    bool prime = false;
     public override void _Ready()
     {
         material = (ShaderMaterial)Material;
@@ -101,6 +102,9 @@ public partial class Tiling : Sprite2D
             if (Input.IsActionJustPressed("Render")){
                 funRendering = !funRendering;
             }
+            if (Input.IsActionJustPressed("Prime")){
+                prime = !prime;
+            }
         }
         if (Input.IsActionJustPressed("Color"))
         {
@@ -138,6 +142,7 @@ public partial class Tiling : Sprite2D
         m.SetShaderParameter("jakeMode", jakeMode);
         m.SetShaderParameter("gradient", gradient);
         m.SetShaderParameter("render", funRendering);
+        m.SetShaderParameter("prime", prime);
     }
     public int findClosest()
     {

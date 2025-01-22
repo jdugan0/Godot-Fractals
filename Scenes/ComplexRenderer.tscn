@@ -9,12 +9,14 @@ shader = ExtResource("1_25xbr")
 shader_parameter/offset = null
 shader_parameter/zoomFactor = null
 shader_parameter/render = false
+shader_parameter/prime = false
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hwlsm"]
 shader = ExtResource("1_25xbr")
 shader_parameter/offset = null
 shader_parameter/zoomFactor = null
 shader_parameter/render = false
+shader_parameter/prime = false
 
 [node name="Node2D" type="Node2D"]
 

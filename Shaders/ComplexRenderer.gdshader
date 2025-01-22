@@ -2,6 +2,7 @@ shader_type canvas_item;
 uniform vec2 offset;
 uniform float zoomFactor;
 uniform bool render = false;
+uniform bool prime = false;
 
 vec2 complexMult(vec2 one, vec2 two){
 	return vec2(one.x * two.x - one.y * two.y, one.x * two.y + one.y * two.x);
@@ -213,6 +214,11 @@ vec2 func(vec2 z) {
 	vec2 result = vec2(0.00);
     return result;
 }
+vec2 funcPrime(vec2 z){
+	float EPSILON = 1e-6;
+	vec2 new = complexDivide(func(z + EPSILON) - func(z), vec2(EPSILON));
+	return new;
+}
 
 void fragment() {
 	bool early = false;
@@ -221,6 +227,9 @@ void fragment() {
 	//- vec2(16.0/9.0,1);
 	
 	vec2 z = func(scale);
+	if (prime){
+		z = funcPrime(scale);
+	}
 	float saturation = 1.0;
 	float value = 1.0;
 	if (render){
