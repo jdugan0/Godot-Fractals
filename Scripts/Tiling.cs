@@ -17,6 +17,7 @@ public partial class Tiling : Sprite2D
     bool jakeMode = false;
     bool gradient = false;
     [Export] TextEdit textEdit;
+    bool funRendering = false;
     public override void _Ready()
     {
         material = (ShaderMaterial)Material;
@@ -33,7 +34,7 @@ public partial class Tiling : Sprite2D
         material = (ShaderMaterial)Material;
         Vector2 mouse = GetViewport().GetMousePosition() + new Vector2(-1920 / 2, -1080 / 2);
         Vector2 scale = (mouse / 1920 / zoom) + offset;
-
+        // GD.Print(offset);
         if (Input.IsActionJustPressed("Click"))
         {
             roots.Add(scale);
@@ -97,6 +98,9 @@ public partial class Tiling : Sprite2D
                 offset = new Vector2(0, 0);
                 zoom = 0.100f;
             }
+            if (Input.IsActionJustPressed("Render")){
+                funRendering = !funRendering;
+            }
         }
         if (Input.IsActionJustPressed("Color"))
         {
@@ -133,6 +137,7 @@ public partial class Tiling : Sprite2D
         m.SetShaderParameter("colorScheme", colorScheme);
         m.SetShaderParameter("jakeMode", jakeMode);
         m.SetShaderParameter("gradient", gradient);
+        m.SetShaderParameter("render", funRendering);
     }
     public int findClosest()
     {

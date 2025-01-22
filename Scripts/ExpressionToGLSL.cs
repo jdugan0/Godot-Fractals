@@ -42,7 +42,9 @@ namespace ExpressionToGLSL
             Slash,      // '/'
             Caret,      // '^'
             LParen,     // '('
-            RParen,     // ')'
+            RParen, // ')'
+            Identifier,
+            EndIdentifier,
             EOF
         }
 
@@ -89,6 +91,18 @@ namespace ExpressionToGLSL
                 else if (c == ')')
                 {
                     tokens.Add(new Token(TokenType.RParen, ")"));
+                    if (pos < input.Length - 1)
+                    {
+                        if (input[pos + 1] == '(')
+                        {
+                            tokens.Add(new Token(TokenType.Asterisk, "*"));
+                        }
+                    }
+                    pos++;
+                }
+                else if (c == '!')
+                {
+                    tokens.Add(new Token(TokenType.EndIdentifier, "!"));
                     pos++;
                 }
                 else if (c == '+')
@@ -127,6 +141,38 @@ namespace ExpressionToGLSL
                 {
                     // Parse a numeric literal, possibly with an 'i' for imaginary.
                     ParseNumberOrImag(input, ref pos, tokens);
+                }
+                else if (char.IsLetter(c))
+                {
+                    if (input.Substring(pos).StartsWith("ln"))
+                    {
+                        tokens.Add(new Token(TokenType.Identifier, "ln"));
+                        pos += 2;
+                    }
+                    else if (input.Substring(pos).StartsWith("sin"))
+                    {
+                        tokens.Add(new Token(TokenType.Identifier, "sin"));
+                        pos += 3;
+                    }
+                    else if (input.Substring(pos).StartsWith("cos"))
+                    {
+                        tokens.Add(new Token(TokenType.Identifier, "cos"));
+                        pos += 3;
+                    }
+                    else if (input.Substring(pos).StartsWith("tan"))
+                    {
+                        tokens.Add(new Token(TokenType.Identifier, "tan"));
+                        pos += 3;
+                    }
+                    else if (input.Substring(pos).StartsWith("sin"))
+                    {
+                        tokens.Add(new Token(TokenType.Identifier, "sin"));
+                        pos += 3;
+                    }
+                    else
+                    {
+                        throw new Exception($"unknown function at {pos}");
+                    }
                 }
                 else
                 {
@@ -191,7 +237,7 @@ namespace ExpressionToGLSL
             }
 
             // e.g. "3.14" or "2.5" or ".75"
-            string numberText = input.Substring(startPos, pos - startPos - (hasI ? 1:0));
+            string numberText = input.Substring(startPos, pos - startPos - (hasI ? 1 : 0));
             // If the last char is '.', that might be invalid unless we allow "3." => "3.0"
             if (numberText.EndsWith("."))
             {
@@ -306,18 +352,32 @@ namespace ExpressionToGLSL
             /// </summary>
             private AstNode ParseFactor()
             {
-                AstNode baseNode = ParseUnary(); // first handle potential unary minus before a base
+                // 1) Check for a leading unary minus on the entire factor
+                if (Match(TokenType.Minus))
+                {
+                    Eat(TokenType.Minus);
+                    // Recursively parse the next factor, so the minus applies to the whole thing
+                    AstNode child = ParseFactor();
+                    return new AstUnaryOp(child, true);
+                }
 
+                // 2) Parse the "base" part (number, z, function call, or parenthesized expression)
+                AstNode baseNode = ParseBase();
+
+                // 3) If we see '^', that indicates exponentiation
+                //    We parse another Factor (not the whole Expression),
+                //    so exponent has higher precedence than + or -.
                 while (Match(TokenType.Caret))
                 {
-                    Token op = Current; // '^'
-                    _pos++;
-                    AstNode exponent = ParseUnary(); 
+                    Eat(TokenType.Caret);
+                    // Parse the exponent as another Factor
+                    AstNode exponent = ParseFactor();
                     baseNode = new AstBinOp(baseNode, exponent, BinOpType.Power);
                 }
 
                 return baseNode;
             }
+
 
             /// <summary>
             /// Allow a leading unary minus (or plus) before a base,
@@ -342,7 +402,7 @@ namespace ExpressionToGLSL
                     // If a leading plus, just skip it
                     Eat(TokenType.Plus);
                     AstNode child = ParseBase();
-                    return child; 
+                    return child;
                 }
 
                 return ParseBase();
@@ -353,11 +413,24 @@ namespace ExpressionToGLSL
             /// </summary>
             private AstNode ParseBase()
             {
-                if (Match(TokenType.LParen))
+                if (Current.Type == TokenType.Identifier)
                 {
-                    Eat(TokenType.LParen); 
+                    Token funcName = Eat(TokenType.Identifier); // e.g. "ln"
+                    Eat(TokenType.LParen); // consume '('
+                    AstNode arg = ParseExpression(); // the function argument
+                    Eat(TokenType.RParen); // consume ')'
+                    return new AstFunctionCall(funcName.Text, arg);
+                }
+                else if (Match(TokenType.LParen))
+                {
+                    Eat(TokenType.LParen);
                     AstNode expr = ParseExpression();
                     Eat(TokenType.RParen);
+                    if (Current.Type == TokenType.EndIdentifier)
+                    {
+                        Token funcName = Eat(TokenType.EndIdentifier);
+                        return new AstFunctionCall(funcName.Text, expr);
+                    }
                     return expr;
                 }
                 else if (Match(TokenType.Number))
@@ -378,6 +451,48 @@ namespace ExpressionToGLSL
                 }
             }
         }
+        private class AstFunctionCall : AstNode
+        {
+            public string FunctionName { get; }
+            public AstNode Argument { get; }
+
+            public AstFunctionCall(string functionName, AstNode argument)
+            {
+                FunctionName = functionName;
+                Argument = argument;
+            }
+
+            public override string ToGlsl()
+            {
+                // Convert the argument to GLSL
+                string argCode = Argument.ToGlsl();
+
+                // Depending on the function name, call the appropriate function in your shader
+                switch (FunctionName.ToLower())
+                {
+                    case "ln":
+                        // We'll assume we have "vec2 complexLn(vec2 z)" in the shader
+                        return $"complexLn({argCode})";
+
+                    case "sin":
+                        // We'll assume "vec2 complexSin(vec2 z)" in the shader
+                        return $"complexSin({argCode})";
+                    case "cos":
+                        // We'll assume "vec2 complexSin(vec2 z)" in the shader
+                        return $"complexCos({argCode})";
+                    case "tan":
+                        // We'll assume "vec2 complexSin(vec2 z)" in the shader
+                        return $"complexTan({argCode})";
+                    case "!":
+                        return $"complexGamma({argCode})";
+
+                    // etc...
+                    default:
+                        throw new Exception($"Unknown function {FunctionName}");
+                }
+            }
+        }
+
 
         #endregion
 
