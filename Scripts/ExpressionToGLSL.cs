@@ -144,30 +144,35 @@ namespace ExpressionToGLSL
                 }
                 else if (char.IsLetter(c))
                 {
-                    if (input.Substring(pos).StartsWith("ln"))
+                    if (input.Substring(pos).ToLower().StartsWith("ln"))
                     {
                         tokens.Add(new Token(TokenType.Identifier, "ln"));
                         pos += 2;
                     }
-                    else if (input.Substring(pos).StartsWith("sin"))
+                    else if (input.Substring(pos).ToLower().StartsWith("sin"))
                     {
                         tokens.Add(new Token(TokenType.Identifier, "sin"));
                         pos += 3;
                     }
-                    else if (input.Substring(pos).StartsWith("cos"))
+                    else if (input.Substring(pos).ToLower().StartsWith("cos"))
                     {
                         tokens.Add(new Token(TokenType.Identifier, "cos"));
                         pos += 3;
                     }
-                    else if (input.Substring(pos).StartsWith("tan"))
+                    else if (input.Substring(pos).ToLower().StartsWith("tan"))
                     {
                         tokens.Add(new Token(TokenType.Identifier, "tan"));
                         pos += 3;
                     }
-                    else if (input.Substring(pos).StartsWith("sin"))
+                    else if (input.Substring(pos).ToLower().StartsWith("e"))
                     {
-                        tokens.Add(new Token(TokenType.Identifier, "sin"));
-                        pos += 3;
+                        tokens.Add(new Token(TokenType.Number, Mathf.E.ToString()));
+                        pos += 1;
+                    }
+                    else if (input.Substring(pos).ToLower().StartsWith("pi"))
+                    {
+                        tokens.Add(new Token(TokenType.Number, Mathf.Pi.ToString()));
+                        pos += 2;
                     }
                     else
                     {
