@@ -167,6 +167,13 @@ vec2 complexSub(vec2 a, vec2 b){
 vec2 complexAdd(vec2 a, vec2 b){
 	return a + b;
 }
+
+vec2 complexAcos(vec2 z){
+	vec2 zSq = complex_pow_complex(z, vec2(2.0,0.0));
+	vec2 inner = complexAdd(z, complex_pow_complex(complexAdd(zSq, vec2(-1.0,0.0)),vec2(0.5, 0.0)));
+	vec2 ln = complexLn(inner);
+	return complexMult(vec2(0, -1), ln);
+}
 vec2 transform(vec2 a, vec2 res){
 	
     // Instead of hard-coded 1920/1080
@@ -215,7 +222,7 @@ vec2 func(vec2 z) {
     return result;
 }
 vec2 funcPrime(vec2 z){
-	float EPSILON = 1e-6;
+	float EPSILON = 1e-3;
 	vec2 new = complexDivide(func(z + EPSILON) - func(z), vec2(EPSILON));
 	return new;
 }

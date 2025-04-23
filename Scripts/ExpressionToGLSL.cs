@@ -174,6 +174,10 @@ namespace ExpressionToGLSL
                         tokens.Add(new Token(TokenType.Number, Mathf.Pi.ToString()));
                         pos += 2;
                     }
+                    else if (input.Substring(pos).ToLower().StartsWith("acos")){
+                        tokens.Add(new Token(TokenType.Identifier, "acos"));
+                        pos += 4;
+                    }
                     else
                     {
                         throw new Exception($"unknown function at {pos}");
@@ -476,22 +480,17 @@ namespace ExpressionToGLSL
                 switch (FunctionName.ToLower())
                 {
                     case "ln":
-                        // We'll assume we have "vec2 complexLn(vec2 z)" in the shader
                         return $"complexLn({argCode})";
-
                     case "sin":
-                        // We'll assume "vec2 complexSin(vec2 z)" in the shader
                         return $"complexSin({argCode})";
                     case "cos":
-                        // We'll assume "vec2 complexSin(vec2 z)" in the shader
                         return $"complexCos({argCode})";
                     case "tan":
-                        // We'll assume "vec2 complexSin(vec2 z)" in the shader
                         return $"complexTan({argCode})";
                     case "!":
                         return $"complexGamma({argCode})";
-
-                    // etc...
+                    case "acos":
+                        return $"complexAcos({argCode})";
                     default:
                         throw new Exception($"Unknown function {FunctionName}");
                 }
